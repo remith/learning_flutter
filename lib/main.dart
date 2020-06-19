@@ -5,23 +5,24 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+// This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // title section widget from Material app
+// title section widget from Material app
 
     return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.cyan,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        // home: FirstRoute());
-        initialRoute: '/',
-        routes: {
-          '/' : (context) => FirstRoute(),
-          '/second' : (context) => SecondRoute(),
-        },
+      title: 'First Page',
+      theme: ThemeData(
+        primarySwatch: Colors.cyan,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+// home: FirstRoute());
+      initialRoute: '/',
+      routes: {
+        '/': (context) => FirstRoute(), //initial page
+// '/second': (context) => SecondRoute(), // navigated page
+        SecondRoute.routeName: (context) => SecondRoute(),
+      },
     );
   }
 }
@@ -34,11 +35,11 @@ class FirstRoute extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            /*1*/
+/*1*/
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /*2*/
+/*2*/
                 Container(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
@@ -63,7 +64,7 @@ class FirstRoute extends StatelessWidget {
     );
     Color color = Theme.of(context).primaryColor;
 
-    // button section widget from Material app START
+// button section widget from Material app START
     Widget buttonSection = Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -74,9 +75,9 @@ class FirstRoute extends StatelessWidget {
         ],
       ),
     );
-    // button section widget from Material app END
+// button section widget from Material app END
 
-    // text section widget from Material app START
+// text section widget from Material app START
     Widget textSection = Container(
       padding: const EdgeInsets.all(32),
       child: Text(
@@ -89,22 +90,25 @@ class FirstRoute extends StatelessWidget {
         softWrap: true,
       ),
     );
-    // text section widget from Material app END
+// text section widget from Material app END
     Widget navButton = Container(
       padding: const EdgeInsets.all(32),
       child: RaisedButton(
         child: Text('Open Second Page'),
         onPressed: () {
-          Navigator.push(
+          Navigator.pushNamed(
             context,
-            MaterialPageRoute(builder: (context) => SecondRoute()),
+// MaterialPageRoute(builder: (context) => SecondRoute()),
+            SecondRoute.routeName,
+            arguments:
+                NavigationArgs('Second Page', 'This is the passed message'),
           );
         },
       ),
     );
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter demo'),
+        title: Text('Home'),
       ),
       body: ListView(
         children: [
@@ -142,95 +146,28 @@ class FirstRoute extends StatelessWidget {
 }
 
 class SecondRoute extends StatelessWidget {
+  static const routeName = '/extractArguments';
   @override
   Widget build(BuildContext context) {
+    final NavigationArgs args = ModalRoute.of(context).settings.arguments;
+    debugPrint('args:$args');
     return Scaffold(
       appBar: AppBar(
-        title: Text("Second Page"),
+        title: Text(args.title),
       ),
-      body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Go back!'),
+      body: ListView(children: [
+        Center(
+          child: RaisedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Go back!'),
+          ),
         ),
-      ),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+        Center(
+          child: Text(args.message),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ]),
     );
   }
 }
@@ -243,7 +180,7 @@ class FavoriteWidget extends StatefulWidget {
 class _FavoriteWidgetState extends State<FavoriteWidget> {
   bool _isFavorited = true;
   int _favoriteCount = 41;
-  // ···
+// ···
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -252,7 +189,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
         Container(
           padding: EdgeInsets.all(0),
           child: IconButton(
-            icon: (_isFavorited ? Icon(Icons.star) : Icon(Icons.star_border)),
+            icon: Icon((_isFavorited ? Icons.star : Icons.star_border)),
             color: Colors.red[500],
             onPressed: _toggleFavorite,
           ),
@@ -278,4 +215,11 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
       }
     });
   }
+}
+
+// Navigation arguments
+class NavigationArgs {
+  final String title;
+  final String message;
+  NavigationArgs(this.title, this.message);
 }
